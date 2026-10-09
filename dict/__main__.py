@@ -1,1 +1,1 @@
-print('aaaaa')
+from PyQt6 import QMainWindow
