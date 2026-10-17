@@ -2,11 +2,13 @@
 '''
 Тута объявлены все виджеты для непосредственной работы. Название модуля написано с
 ошибкой потому что так исторически сложилось
+На текущий момент мусор, я просто игрался
 '''
 
 '''Импорты'''
+from PyQt6.QtCore import pyqtSignal
 from PyQt6.QtWidgets import (
-    QWidget, QComboBox, QStackedLayout, QVBoxLayout, QLabel
+    QWidget, QComboBox, QStackedLayout, QVBoxLayout, QLabel, QLineEdit
 )
 
 
@@ -17,8 +19,12 @@ class MainWidget(QWidget):
         self.create_w()
 
     def create_w(self):
+        #оформление
+        self.setMinimumSize(450, 350)
+
         #выбираем действие
         choose_act = QComboBox()
+        #choose_act.resize(50, 20)
         choose_act.addItem('Практика')
         choose_act.addItem('Добавление слова в словарь')
 
@@ -35,11 +41,12 @@ class MainWidget(QWidget):
         #создаём основной лэйаут
         main_layout = QVBoxLayout()
         main_layout.addWidget(choose_act)
-        main_layout.addWidget(self.acts)
+        main_layout.addLayout(self.acts)
         self.setLayout(main_layout)
 
 
-'''Класс для выбора слова'''
+'''Выбор слова'''
+'''Основной класс'''
 class ChooseWordWidget(QWidget):
     def __init__(self):
         super().__init__()
@@ -49,11 +56,24 @@ class ChooseWordWidget(QWidget):
         check_is_work = QLabel('Эта херня работает',self)
 
 
-'''Класс для добавления слова в БД'''
+
+'''Добавление в БД'''
+'''Основной класс'''
 class AddToDBWiget(QWidget):
     def __init__(self):
         super().__init__()
         self.create_w()
+        #self.setGeometry()
 
     def create_w(self):
-        check_is_work = QLabel('Эта херня тоже работает',self)
+        #check_is_work = QLabel('Эта херня тоже работает',self)
+        new_world_label = QLabel('Слово')
+        new_world = QLineEdit()
+        var_label = QLabel('Варианты')
+        var_list = [VarLine(f'v{i}') for i in range(1,5)]
+
+'''Класс для вариантов'''
+class VarLine(QLineEdit):
+    def __init__(self, field_id: str):
+        super().__init__()
+        self.field_id = field_id

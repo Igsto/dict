@@ -1,1 +1,4 @@
-from PyQt6 import QMainWindow
+from dict.app import run
+
+if __name__ == '__main__':
+    run()
