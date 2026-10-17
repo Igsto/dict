@@ -8,8 +8,8 @@
 from PyQt6.QtWidgets import (
     QWidget, QStackedLayout, QComboBox, QVBoxLayout
 )
-from choose_word_widget import ChooseWordWidget
-from add_to_db_widget import AddToDBWiget
+from .choose_word_widget import ChooseWordWidget
+from .add_to_db_widget import AddToDBWiget
 
 '''
 Класс главного виджета
