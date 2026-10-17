@@ -20,19 +20,21 @@ class AddToDBWiget(QWidget):
         #self.setGeometry()
 
     def create_w(self):
-        #check_is_work = QLabel('Эта херня тоже работает',self)
         layout = QVBoxLayout()
         new_world_label = QLabel('Слово')
+        new_world_label.setStyleSheet("font-size: 20px;")
         layout.addWidget(new_world_label)
         self.new_world = WordLine()
         layout.addWidget(self.new_world)
         var_label = QLabel('Варианты')
+        var_label.setStyleSheet("font-size: 20px;")
         layout.addWidget(var_label)
         self.var_list = VarList()
         layout.addWidget(self.var_list)
         self.buttons = AddNClearButtons()
         layout.addWidget(self.buttons)
-        layout.setSpacing(0)
+        layout.setSpacing(10)
+        layout.addStretch()
         self.setLayout(layout)
         self.buttons.add_button.clicked.connect(self.get_words)
         self.buttons.clear_button.clicked.connect(self.clear_words)
@@ -81,7 +83,6 @@ class VarLine(QLineEdit):
 
 '''Объединяющий класс с вариантами'''
 class VarList(QWidget):
-    #words_request = pyqtSignal(list)
     def __init__(self):
         super().__init__()
         self.set_up_w()
@@ -95,11 +96,16 @@ class VarList(QWidget):
         lines_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lines_layout)
 
-    # def get_words(self):
-    #     self.words_request.emit([vl.text() for vl in self.var_lines])
-
 
 '''Класс для отдельной кнопки'''
+class CustomButtonDB(QPushButton):
+    def __init__(self):
+        super().__init__()
+        self.set_graphics()
+
+    def set_graphics(self):
+        self.setFixedSize(75, 20)
+        self.setStyleSheet(sub_str_btn())
 
 
 '''Класс с кнопками'''
@@ -109,21 +115,17 @@ class AddNClearButtons(QWidget):
         self.set_up_w()
 
     def set_up_w(self):
+        self.setFixedSize(170, 20)
         layout = QHBoxLayout()
-        self.add_button = QPushButton('Добавить')
+        self.add_button = CustomButtonDB()
+        self.add_button.setText('Добавить')
         layout.addWidget(self.add_button)
-        self.clear_button = QPushButton('Очистить')
+        self.clear_button = CustomButtonDB()
+        self.clear_button.setText('Очистить')
         layout.addWidget(self.clear_button)
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
-
-
-'''Объединяющий класс слова + кнопки'''
-class WordsNButtons(QWidget):
-    def __init__(self):
-        super().__init__()
-        self.set_up_w()
-
-    #def set_up_w(self):
 
 
 '''Вспомогательная функция для рамок'''
@@ -135,3 +137,15 @@ def sub_str(outline_c='#3c30e3', w_c='#07fc03'):
     }}
     """
 
+
+'''Вспомогательная функция для кнопок'''
+def sub_str_btn(brd_c='#3c30e3'):
+    return f"""
+    QPushButton {{ 
+        background-color: #ffffff;
+        color: #000000;
+        border: 1px solid {brd_c};
+        border-radius: 2px; 
+        font-size: 14px;
+    }}
+    """
