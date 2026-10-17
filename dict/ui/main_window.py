@@ -8,7 +8,7 @@
 from PyQt6.QtWidgets import (
     QMainWindow
 )
-from dict.models.wigets import MainWidget
+from dict.models.main_widget import MainWidget
 
 class MainWindow(QMainWindow):
     def __init__(self):
