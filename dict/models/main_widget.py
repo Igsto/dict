@@ -32,9 +32,9 @@ class MainWidget(QWidget):
         #создаём слой для выбора и добавляем страницы
         self.acts = QStackedLayout()
         choose_word_page = ChooseWordWidget()
-        add_to_db_page = AddToDBWiget()
+        self.add_to_db_page = AddToDBWiget()
         self.acts.addWidget(choose_word_page)
-        self.acts.addWidget(add_to_db_page)
+        self.acts.addWidget(self.add_to_db_page)
 
         #соединяем с комбо боксом
         choose_act.currentIndexChanged.connect(self.acts.setCurrentIndex)
@@ -44,3 +44,9 @@ class MainWidget(QWidget):
         main_layout.addWidget(choose_act)
         main_layout.addLayout(self.acts)
         self.setLayout(main_layout)
+
+        #коннектим с кнопкой
+        self.add_to_db_page.words_request.connect(self.print_words)
+
+    def print_words(self, values):
+        print(values)
