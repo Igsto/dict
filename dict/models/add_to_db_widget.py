@@ -7,9 +7,7 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QPushButton
 )
 from PyQt6.QtCore import pyqtSignal
-
-'''Константы'''
-VARIANTS = [f'v{i+1}' for i in range(4)]
+from ..constants.consts import VARIANTS
 
 '''Основной класс'''
 class AddToDBWiget(QWidget):
