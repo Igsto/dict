@@ -17,36 +17,66 @@ class AddToDBWiget(QWidget):
         self.create_w()
         #self.setGeometry()
 
+    #Создание виждета
     def create_w(self):
+        #основной лэйаут
         layout = QVBoxLayout()
+        #надпись
         new_world_label = QLabel('Слово')
         new_world_label.setStyleSheet("font-size: 20px;")
         layout.addWidget(new_world_label)
+        #новое слово
         self.new_world = WordLine()
         layout.addWidget(self.new_world)
+        # надпись
         var_label = QLabel('Варианты')
         var_label.setStyleSheet("font-size: 20px;")
         layout.addWidget(var_label)
+        #четыре слова
         self.var_list = VarList()
         layout.addWidget(self.var_list)
+        #кнопки
         self.buttons = AddNClearButtons()
+        self.buttons.add_button.setEnabled(False)
         layout.addWidget(self.buttons)
+        #настройка основного лэйаута
         layout.setSpacing(10)
         layout.addStretch()
         self.setLayout(layout)
+
+        #изменение состояния кнопки
+        #self.update_stage()
+
+        #сигналы кнопок
+        #self.buttons.add_button.connect(self.update_stage)
+        self.var_list.is_filled_request.connect(self.updete_stage)
+        # for v in self.var_list:
+        #     v.textCh
         self.buttons.add_button.clicked.connect(self.get_words)
         self.buttons.clear_button.clicked.connect(self.clear_words)
 
+    #Функция для получения строк
     def get_words(self):
         #values =
         self.words_request.emit(
             [vl.text() for vl in self.var_list.var_lines]
         )
 
+    #Очистка
     def clear_words(self):
         self.new_world.clear()
         for vl in self.var_list.var_lines:
             vl.clear()
+
+    #Изменение состояния кнопки добавить
+    def updete_stage(self, is_fld):
+        self.buttons.add_button.setEnabled(is_fld)
+    # def update_stage(self, *_):
+    #     self.buttons.add_button.setEnabled(all([bool(w.text()) for w in self.var_list.var_lines]))
+        # if self.new_world.text() and True in [self.var_list.text()]:
+        #     self.buttons.add_button.setEnabled(False)
+        # else:
+        #     self.buttons.add_button.setEnabled(True)
 
 
 '''Класс для задаваемого слова'''
@@ -63,6 +93,7 @@ class WordLine(QLineEdit):
 
 '''Класс для вариантов, одна линия заполнения'''
 class VarLine(QLineEdit):
+    #is_filled_line_request = pyqtSignal(bool)
     def __init__(self, field_id: str):
         super().__init__()
         self.field_id = field_id
@@ -78,21 +109,34 @@ class VarLine(QLineEdit):
         else:
             self.setStyleSheet(sub_str(w_c='#fc0303'))
 
+    #проверка заполнено ли
+    def is_filled_line(self) -> bool:
+        return bool(self.text())
+
 
 '''Объединяющий класс с вариантами'''
 class VarList(QWidget):
+    is_filled_request = pyqtSignal(bool)
     def __init__(self):
         super().__init__()
         self.set_up_w()
 
+    #создание виждета
     def set_up_w(self):
         lines_layout = QVBoxLayout()
         self.var_lines = [VarLine(v) for v in VARIANTS]
-        for i in range(4):
-            lines_layout.addWidget(self.var_lines[i])
+        for v in self.var_lines:
+            v.textChanged.connect(self.is_filled)
+            lines_layout.addWidget(v)
         lines_layout.setSpacing(0)
         lines_layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(lines_layout)
+
+    #эмит сигнала если есть текст
+    def is_filled(self, *_):
+        self.is_filled_request.emit(
+            all(v.is_filled_line() for v in self.var_lines)
+        )
 
 
 '''Класс для отдельной кнопки'''
@@ -145,5 +189,8 @@ def sub_str_btn(brd_c='#3c30e3'):
         border: 1px solid {brd_c};
         border-radius: 2px; 
         font-size: 14px;
+    }}
+    QPushButton:disabled {{
+        background-color: #cccccc;
     }}
     """
