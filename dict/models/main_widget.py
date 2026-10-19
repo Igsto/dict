@@ -10,13 +10,16 @@ from PyQt6.QtWidgets import (
 )
 from .choose_word_widget import ChooseWordWidget
 from .add_to_db_widget import AddToDBWiget
+from ..controllers.all_controllers import AddToDBController
+from ..db.sql_module import Storage
 
 '''
 Класс главного виджета
 '''
 class MainWidget(QWidget):
-    def __init__(self):
+    def __init__(self, storage: Storage):
         super().__init__()
+        self.storage = storage
         self.create_w()
 
     def create_w(self):
@@ -25,7 +28,6 @@ class MainWidget(QWidget):
 
         #выбираем действие
         choose_act = QComboBox()
-        #choose_act.resize(50, 20)
         choose_act.addItem('Практика')
         choose_act.addItem('Добавление слова в словарь')
 
@@ -33,6 +35,9 @@ class MainWidget(QWidget):
         self.acts = QStackedLayout()
         choose_word_page = ChooseWordWidget()
         self.add_to_db_page = AddToDBWiget()
+        self.add_to_db_controller = AddToDBController(
+            self.add_to_db_page.words_request, self.storage
+        )
         self.acts.addWidget(choose_word_page)
         self.acts.addWidget(self.add_to_db_page)
 

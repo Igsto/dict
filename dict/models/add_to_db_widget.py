@@ -7,12 +7,12 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QPushButton
 )
 from PyQt6.QtCore import pyqtSignal, QTimer
-from dict.consts import VARIANTS
+from dict.consts import VARIANTS, Word
 from datetime import date
 
 '''Основной класс'''
 class AddToDBWiget(QWidget):
-    words_request = pyqtSignal(dict)
+    words_request = pyqtSignal(Word)
     def __init__(self):
         super().__init__()
         self.create_w()
@@ -56,11 +56,11 @@ class AddToDBWiget(QWidget):
 
     #Функция для получения словаря с данными
     def get_words(self):
-        self.words_request.emit(
-            {'w': self.new_world.text()} | \
+        word_dict = {'w': self.new_world.text()} | \
             {vl.field_id: vl.text() for vl in self.var_list.var_lines} | \
             {'date': date.today()}
-        )
+        curr_word = Word.from_dict(word_dict)
+        self.words_request.emit(curr_word)
         self.buttons.add_button.setText('Добавлено!')
         self.buttons.add_button.setEnabled(False)
         QTimer.singleShot(1500, self.after_add)

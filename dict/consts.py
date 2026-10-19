@@ -31,6 +31,9 @@ class Word:
 
     @classmethod
     def from_dict(cls, data: dict) -> 'Word':
+        d = data['date']
+        if isinstance(d, str):
+            d = date.fromisoformat(d)
         return cls(
             id=data.get('id'),
             w=data['w'],
@@ -38,7 +41,7 @@ class Word:
             v2=data['v2'],
             v3=data['v3'],
             v4=data['v4'],
-            date=date.fromisoformat(data['date'])
+            date=d
         )
 
     @classmethod

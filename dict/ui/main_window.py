@@ -9,12 +9,14 @@ from PyQt6.QtWidgets import (
     QMainWindow
 )
 from dict.models.main_widget import MainWidget
+from ..db.sql_module import Storage
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, storage: Storage):
         super().__init__()
+        self.storage = storage
         self.setup_ui()
 
     def setup_ui(self):
-        main_w = MainWidget()
+        main_w = MainWidget(self.storage)
         self.setCentralWidget(main_w)
