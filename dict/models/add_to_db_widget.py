@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QPushButton
 )
 from PyQt6.QtCore import pyqtSignal, QTimer
-from ..constants.consts import VARIANTS
+from dict.consts import VARIANTS
 from datetime import date
 
 '''Основной класс'''
