@@ -8,10 +8,11 @@ from PyQt6.QtWidgets import (
 )
 from PyQt6.QtCore import pyqtSignal
 from ..constants.consts import VARIANTS
+from datetime import date
 
 '''Основной класс'''
 class AddToDBWiget(QWidget):
-    words_request = pyqtSignal(list)
+    words_request = pyqtSignal(dict)
     def __init__(self):
         super().__init__()
         self.create_w()
@@ -45,21 +46,20 @@ class AddToDBWiget(QWidget):
         self.setLayout(layout)
 
         #изменение состояния кнопки
-        #self.update_stage()
+        self.new_word_filled = False
+        self.new_world.is_word_filled_request.connect(self.new_word_update)
+        self.var_list_filled = False
+        self.var_list.is_filled_request.connect(self.var_list_update)
 
-        #сигналы кнопок
-        #self.buttons.add_button.connect(self.update_stage)
-        self.var_list.is_filled_request.connect(self.updete_stage)
-        # for v in self.var_list:
-        #     v.textCh
         self.buttons.add_button.clicked.connect(self.get_words)
         self.buttons.clear_button.clicked.connect(self.clear_words)
 
-    #Функция для получения строк
+    #Функция для получения словаря с данными
     def get_words(self):
-        #values =
         self.words_request.emit(
-            [vl.text() for vl in self.var_list.var_lines]
+            {'w': self.new_world.text()} | \
+            {vl.field_id: vl.text() for vl in self.var_list.var_lines} | \
+            {'date': date.today()}
         )
 
     #Очистка
@@ -68,32 +68,51 @@ class AddToDBWiget(QWidget):
         for vl in self.var_list.var_lines:
             vl.clear()
 
+    #функции изменение переменных состояний кнопки
+    def new_word_update(self, nw_up):
+        self.new_word_filled = nw_up
+        self.update_stage()
+
+    def var_list_update(self, vl_up):
+        self.var_list_filled = vl_up
+        self.update_stage()
+
     #Изменение состояния кнопки добавить
-    def updete_stage(self, is_fld):
-        self.buttons.add_button.setEnabled(is_fld)
-    # def update_stage(self, *_):
-    #     self.buttons.add_button.setEnabled(all([bool(w.text()) for w in self.var_list.var_lines]))
-        # if self.new_world.text() and True in [self.var_list.text()]:
-        #     self.buttons.add_button.setEnabled(False)
-        # else:
-        #     self.buttons.add_button.setEnabled(True)
+    def update_stage(self):
+        self.buttons.add_button.setEnabled(
+            self.new_word_filled and self.var_list_filled
+        )
 
 
 '''Класс для задаваемого слова'''
 class WordLine(QLineEdit):
+    is_word_filled_request = pyqtSignal(bool)
     def __init__(self):
         super().__init__()
         self.set_outline()
+        self.set_up_w()
 
+    #графика
     def set_outline(self):
         self.setFixedSize(170, 20)
         self.setFrame(False)
         self.setStyleSheet(sub_str(w_c='#000000'))
 
+    #настройка виджета
+    def set_up_w(self):
+        self.textChanged.connect(self.is_word_filled)
+
+    #проверка на заполнение
+    def is_changed(self):
+        return bool(self.text())
+
+    #эмит заполнения
+    def is_word_filled(self):
+        self.is_word_filled_request.emit(self.is_changed())
+
 
 '''Класс для вариантов, одна линия заполнения'''
 class VarLine(QLineEdit):
-    #is_filled_line_request = pyqtSignal(bool)
     def __init__(self, field_id: str):
         super().__init__()
         self.field_id = field_id
