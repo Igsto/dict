@@ -6,7 +6,7 @@
 from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QPushButton
 )
-from PyQt6.QtCore import pyqtSignal
+from PyQt6.QtCore import pyqtSignal, QTimer
 from ..constants.consts import VARIANTS
 from datetime import date
 
@@ -61,6 +61,15 @@ class AddToDBWiget(QWidget):
             {vl.field_id: vl.text() for vl in self.var_list.var_lines} | \
             {'date': date.today()}
         )
+        self.buttons.add_button.setText('Добавлено!')
+        self.buttons.add_button.setEnabled(False)
+        QTimer.singleShot(1500, self.after_add)
+
+    #функция для действий после нажатия кнопки
+    def after_add(self):
+        self.clear_words()
+        self.buttons.add_button.return_to_orig_label()
+        self.update_stage()
 
     #Очистка
     def clear_words(self):
@@ -160,14 +169,23 @@ class VarList(QWidget):
 
 '''Класс для отдельной кнопки'''
 class CustomButtonDB(QPushButton):
-    def __init__(self):
+    def __init__(self, lbl = ''):
         super().__init__()
+        self.lbl = lbl
         self.set_graphics()
+        self.set_up_w()
 
+    #графика
     def set_graphics(self):
         self.setFixedSize(75, 20)
         self.setStyleSheet(sub_str_btn())
 
+    #создание виджета
+    def set_up_w(self):
+        self.setText(self.lbl)
+
+    def return_to_orig_label(self):
+        self.setText(self.lbl)
 
 '''Класс с кнопками'''
 class AddNClearButtons(QWidget):
@@ -178,11 +196,9 @@ class AddNClearButtons(QWidget):
     def set_up_w(self):
         self.setFixedSize(170, 20)
         layout = QHBoxLayout()
-        self.add_button = CustomButtonDB()
-        self.add_button.setText('Добавить')
+        self.add_button = CustomButtonDB('Добавить')
         layout.addWidget(self.add_button)
-        self.clear_button = CustomButtonDB()
-        self.clear_button.setText('Очистить')
+        self.clear_button = CustomButtonDB('Очистить')
         layout.addWidget(self.clear_button)
         layout.setSpacing(0)
         layout.setContentsMargins(0, 0, 0, 0)
