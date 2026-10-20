@@ -1,5 +1,5 @@
 '''
-В данном файле лежат важные константы
+В данном файле лежат важные константы и всякие функции
 '''
 
 from dataclasses import dataclass
@@ -8,6 +8,8 @@ import sqlite3
 
 VARIANTS = [f'v{i+1}' for i in range(4)]
 
+
+'''Класс для одного слова'''
 @dataclass
 class Word:
     w: str
@@ -18,6 +20,7 @@ class Word:
     date: date
     id: int | None = None
 
+    #перевод в словарь
     def to_dict(self) -> dict:
         return {
             'id': self.id,
@@ -29,6 +32,11 @@ class Word:
             'date': self.date.isoformat()
         }
 
+    def to_dict_vars(self) -> dict:
+        w_v = self.to_dict()
+        return {k: w_v[k] for k in VARIANTS}
+
+    #из словаря в класс
     @classmethod
     def from_dict(cls, data: dict) -> 'Word':
         d = data['date']
@@ -44,6 +52,50 @@ class Word:
             date=d
         )
 
+    #из sql в класс
     @classmethod
     def from_row(cls, row: sqlite3.Row) -> 'Word':
         return cls.from_dict(dict(row))
+
+
+'''Вспомогательная функция для кнопок'''
+def sub_str_btn(brd_c='#3c30e3'):
+    return f"""
+    QPushButton {{ 
+        background-color: #ffffff;
+        color: #000000;
+        border: 1px solid {brd_c};
+        border-radius: 2px; 
+        font-size: 14px;
+    }}
+    QPushButton:disabled {{
+        background-color: #cccccc;
+    }}
+    """
+
+
+'''Вспомогательная функция для рамок'''
+def sub_str(outline_c='#3c30e3', w_c='#07fc03'):
+    return f""" 
+    QLineEdit {{
+        border: 1px solid {outline_c};
+        color: {w_c};
+    }}
+    """
+
+'''Вспомогательная функция для лэйблов'''
+def sub_str_label(v_c='#3c30e3'):
+    return f"""
+    QLabel {{
+        background-color: #ffffff;
+        color: #000000;
+        font-size: 14px;
+        border: 1px solid #3c30e3;
+    }}
+    QLabel:hover {{
+        color: #3c30e3;
+    }}
+    QLabel:pressed {{
+        color: {v_c}
+    }}
+    """

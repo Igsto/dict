@@ -12,6 +12,8 @@ from .choose_word_widget import ChooseWordWidget
 from .add_to_db_widget import AddToDBWiget
 from ..controllers.all_controllers import AddToDBController
 from ..db.sql_module import Storage
+from ..consts import Word
+from datetime import date
 
 '''
 Класс главного виджета
@@ -33,7 +35,16 @@ class MainWidget(QWidget):
 
         #создаём слой для выбора и добавляем страницы
         self.acts = QStackedLayout()
-        choose_word_page = ChooseWordWidget()
+        #для теста
+        w = Word.from_dict(
+            {
+                'w': 'word',
+                'v1': 'слово', 'v2': 'кошка', 'v3': 'беспилотник', 'v4': 'онанизм',
+                'date': date.today()
+            }
+        )
+        #print(w.to_dict_vars())
+        choose_word_page = ChooseWordWidget(w)
         self.add_to_db_page = AddToDBWiget()
         self.add_to_db_controller = AddToDBController(
             self.add_to_db_page.words_request, self.storage

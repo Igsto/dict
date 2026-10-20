@@ -7,7 +7,7 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QPushButton
 )
 from PyQt6.QtCore import pyqtSignal, QTimer
-from dict.consts import VARIANTS, Word
+from dict.consts import VARIANTS, Word, sub_str_btn, sub_str
 from datetime import date
 
 '''Основной класс'''
@@ -205,27 +205,3 @@ class AddNClearButtons(QWidget):
         self.setLayout(layout)
 
 
-'''Вспомогательная функция для рамок'''
-def sub_str(outline_c='#3c30e3', w_c='#07fc03'):
-    return f""" 
-    QLineEdit {{
-        border: 1px solid {outline_c};
-        color: {w_c};
-    }}
-    """
-
-
-'''Вспомогательная функция для кнопок'''
-def sub_str_btn(brd_c='#3c30e3'):
-    return f"""
-    QPushButton {{ 
-        background-color: #ffffff;
-        color: #000000;
-        border: 1px solid {brd_c};
-        border-radius: 2px; 
-        font-size: 14px;
-    }}
-    QPushButton:disabled {{
-        background-color: #cccccc;
-    }}
-    """
