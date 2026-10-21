@@ -63,24 +63,22 @@ class SingleLine(QLabel):
         self.setFixedSize(170, 20)
         self.setCursor(QCursor(Qt.CursorShape.PointingHandCursor))
         self.base_style = sub_str_label()
-        # if self.v_label == 'v1':
-        #     self.base_style = sub_str_label()
-        # else:
-        #     self.base_style = sub_str_label(v_c='#fc0303')
         self.setStyleSheet(self.base_style)
 
+    #функция для установки при нажатии
     def flash(self, c: str, ms: int = 1000):
         qss = sub_str_label(v_c=c)
         self.setStyleSheet(qss)
         self.reset_timer.start(ms)
 
+    #возврат к базовому стилю
     def reset_style(self):
-        print(f"[DEBUG] reset_style: {time.time()}")
         self.setStyleSheet(self.base_style)
 
+    #нажато
     def mousePressEvent(self, event):
         if event.button() == Qt.MouseButton.LeftButton:
-            print(f"[DEBUG] клик по {self.v_label}")
+            #print(f"[DEBUG] клик по {self.v_label}")
             self.clicked_request.emit()
         super().mousePressEvent(event)
 
@@ -94,6 +92,11 @@ class ChooseVariants(QWidget):
         random.shuffle(lst)
         self.w_vars = dict(lst)
         super().__init__()
+
+        self.unlock_timer = QTimer()
+        self.unlock_timer.setSingleShot(True)
+        self.unlock_timer.timeout.connect(self.unlock_lines)
+
         self.set_up_w()
 
     def set_up_w(self):
@@ -106,13 +109,31 @@ class ChooseVariants(QWidget):
         layout.setContentsMargins(0, 0, 0, 0)
         self.setLayout(layout)
 
+    #дейстаия при нажатии
     def on_line_clicked(self, line: SingleLine):
+
+        for l in self.lines:
+            l.setEnabled(False)
+
+        self.unlock_timer.start(1000)
+
         if line.v_label == 'v1':
             line.flash('#00aa00', 1000)
             self.line_clicked_request.emit(True)
         else:
             line.flash('#ffff00', 1000)
+
+            for l in self.lines:
+                if l.v_label == 'v1':
+                    l.flash('#00aa00', 1000)
+                    break
+
             self.line_clicked_request.emit(False)
+
+    #функция разблокировки линий
+    def unlock_lines(self):
+        for l in self.lines:
+            l.setEnabled(True)
 
 # '''Кнопка начать'''
 # class BeginButton(QPushButton):
