@@ -90,7 +90,7 @@ def sub_str_label(v_c='#3c30e3', c='#000000'):
         background-color: #ffffff;
         color: {c};
         font-size: 14px;
-        border: 3px solid {v_c};
+        border: 2px solid {v_c};
     }}
     QLabel:hover {{
         color: #3c30e3;
