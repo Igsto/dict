@@ -1,4 +1,4 @@
 .venv/
 venv/
 env/
-dict/db/data.db*
+dict/db/data.db

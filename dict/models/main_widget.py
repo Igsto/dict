@@ -41,7 +41,6 @@ class MainWidget(QWidget):
         self.acts.addWidget(self.choose_word_page)
         self.choose_word_controller = ChooseWordController(self.storage)
         words = [w.to_dict_w() for w in self.choose_word_controller.get_words()]
-        print(words)
         self.choose_word_queue = ChooseWordQueue(words)
 
         #аналогично для добавления
@@ -70,9 +69,7 @@ class MainWidget(QWidget):
 
     #новое слово из очереди
     def get_next_word(self):
-        print(f"[DEBUG] get_next_word, queue len={len(self.choose_word_queue.queue)}")
         next_word = self.choose_word_queue.next_word()
-        print(f"[DEBUG] next_word = {next_word}")
         if next_word is not None:
             self.choose_word_page.show_next(next_word)
 
