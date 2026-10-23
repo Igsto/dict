@@ -8,12 +8,14 @@
 from PyQt6.QtWidgets import (
     QWidget, QStackedLayout, QComboBox, QVBoxLayout
 )
+from PyQt6.QtCore import pyqtSignal, QObject
 from .choose_word_widget import ChooseWordWidget
 from .add_to_db_widget import AddToDBWiget
-from ..controllers.all_controllers import AddToDBController
+from ..controllers.all_controllers import AddToDBController, ChooseWordController
 from ..db.sql_module import Storage
 from ..consts import Word
 from datetime import date
+from collections import deque
 
 '''
 Класс главного виджета
@@ -44,12 +46,19 @@ class MainWidget(QWidget):
             }
         )
         #print(w.to_dict_vars())
-        choose_word_page = ChooseWordWidget(w)
+        self.choose_word_page = ChooseWordWidget()
+        self.acts.addWidget(self.choose_word_page)
+        self.choose_word_controller = ChooseWordController(self.storage)
+        words = [w.to_dict_w() for w in self.choose_word_controller.get_words()]
+        self.choose_word_queue = ChooseWordQueue(words)
+        #print(self.choose_word_queue)
+        print(self.choose_word_queue.next_word())
+
         self.add_to_db_page = AddToDBWiget()
         self.add_to_db_controller = AddToDBController(
             self.add_to_db_page.words_request, self.storage
         )
-        self.acts.addWidget(choose_word_page)
+        #self.acts.addWidget(self.choose_word_page)
         self.acts.addWidget(self.add_to_db_page)
 
         #соединяем с комбо боксом
@@ -64,5 +73,42 @@ class MainWidget(QWidget):
         #коннектим с кнопкой
         self.add_to_db_page.words_request.connect(self.print_words)
 
+        self.choose_word_queue.queue_empty_request.connect(self.reset)
+        self.choose_word_page.vars.click_occured.connect(self.get_next_word)
+
+        #self.choose_word_queue.queue_empty_request.connect(self.reset)
+
+    #новое слово из очереди
+    def get_next_word(self):
+        next_word = self.choose_word_queue.next_word()
+        if next_word is not None:
+            self.choose_word_page.show_next(next_word)
+
+    #ресет
+    def reset(self):
+        self.choose_word_page.reset_all()
+
+    #для теста выводим заполненное
     def print_words(self, values):
         print(values)
+
+
+'''Кастомная очередь'''
+class ChooseWordQueue(QObject):
+    queue_empty_request = pyqtSignal()
+    def __init__(self, words):
+        super().__init__()
+        self.queue = deque(words)
+
+    def next_word(self):
+        next = self.queue.pop()
+        if not self.queue:
+            self.queue_empty_request.emit()
+            return None
+        return next
+
+    def clear(self):
+        self.queue.clear()
+
+    def is_empty(self):
+        return bool(self.queue)

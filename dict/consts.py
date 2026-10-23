@@ -5,8 +5,15 @@
 from dataclasses import dataclass
 from datetime import date
 import sqlite3
+#from collections import deque
 
 VARIANTS = [f'v{i+1}' for i in range(4)]
+
+
+'''Кастомная очередь'''
+class ChooseWordQueue:
+    def __init__(self):
+        pass
 
 
 '''Класс для одного слова'''
@@ -35,6 +42,9 @@ class Word:
     def to_dict_vars(self) -> dict:
         w_v = self.to_dict()
         return {k: w_v[k] for k in VARIANTS}
+
+    def to_dict_w(self) -> dict:
+        return {'w' : self.w} | self.to_dict_vars()
 
     #из словаря в класс
     @classmethod

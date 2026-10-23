@@ -83,7 +83,7 @@ class Storage:
         return [self.row_to_word(row) for row in cursor]
 
     #чтение не всей БД
-    def get_by_date(self, start: date, end: date, lmt: str = '10d') -> list[Word]:
+    def get_by_date(self, start: date, end: date, lmt: str = '10w') -> list[Word]:
         lmt_id = self.LIMIT_OPTION.get(lmt)
         if lmt_id is None:
             raise ValueError('Дни укажи, сука')
@@ -92,6 +92,7 @@ class Storage:
             SELECT id, w, v1, v2, v3, v4, date 
             FROM words
             WHERE date BETWEEN ? and ?
+            ORDER BY RANDOM()
             LIMIT {lmt_id}
             """,
             (start.isoformat(), end.isoformat()),
