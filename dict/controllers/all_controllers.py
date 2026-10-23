@@ -20,12 +20,6 @@ class AddToDBController:
         self.storage.add(word)
 
 
-
-
-    #def fill_queue(self):
-
-
-
 '''Контроллер для взятия слов из БД и добавление в очередь'''
 class ChooseWordController:
     def __init__(self, storage: Storage):
@@ -35,24 +29,3 @@ class ChooseWordController:
         words = self.storage.get_by_date(date.today() - timedelta(days=10), date.today())
         #print(words)
         return words
-
-
-# class ChooseWordController:
-#     def __init__(self, storage: Storage, click_signal):
-#         self.storage = storage
-#         self.queue: deque[dict] = deque()
-#
-#     def strart(self) -> dict | None:
-#         self.fill_queue()
-#         return self.next_word()
-#
-#     def fill_queue(self):
-#         words = self.storage.get_by_date(date.today(), date.today())
-#         self.queue = deque(words)
-#
-#     def next_word(self) -> dict | None:
-#         if not self.queue:
-#             self.fill_queue()
-#             if not self.queue:
-#                 return None
-#         return self.queue.popleft()

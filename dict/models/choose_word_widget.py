@@ -18,7 +18,6 @@ import time
 '''
 class ChooseWordWidget(QWidget):
     def __init__(self):
-        #self.word = word
         super().__init__()
         self.create_w()
 
@@ -129,7 +128,6 @@ class ChooseVariants(QWidget):
 
     def set_up_w(self):
         layout = QVBoxLayout()
-        #self.lines = [SingleLine(v_label=v, v_word=w) for v, w in self.w_vars.items()]
         self.lines = [SingleLine() for _ in range(4)]
         for l in self.lines:
             layout.addWidget(l)
@@ -163,7 +161,7 @@ class ChooseVariants(QWidget):
             line.flash('#00aa00', 1000)
             self.line_clicked_request.emit(True)
         else:
-            line.flash('#ffff00', 1000)
+            line.flash('#ff0000', 1000)
 
             for l in self.lines:
                 if l.v_label == 'v1':

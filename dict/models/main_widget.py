@@ -37,28 +37,18 @@ class MainWidget(QWidget):
 
         #создаём слой для выбора и добавляем страницы
         self.acts = QStackedLayout()
-        #для теста
-        w = Word.from_dict(
-            {
-                'w': 'word',
-                'v1': 'слово', 'v2': 'кошка', 'v3': 'беспилотник', 'v4': 'онанизм',
-                'date': date.today()
-            }
-        )
-        #print(w.to_dict_vars())
         self.choose_word_page = ChooseWordWidget()
         self.acts.addWidget(self.choose_word_page)
         self.choose_word_controller = ChooseWordController(self.storage)
         words = [w.to_dict_w() for w in self.choose_word_controller.get_words()]
+        print(words)
         self.choose_word_queue = ChooseWordQueue(words)
-        #print(self.choose_word_queue)
-        print(self.choose_word_queue.next_word())
 
+        #аналогично для добавления
         self.add_to_db_page = AddToDBWiget()
         self.add_to_db_controller = AddToDBController(
             self.add_to_db_page.words_request, self.storage
         )
-        #self.acts.addWidget(self.choose_word_page)
         self.acts.addWidget(self.add_to_db_page)
 
         #соединяем с комбо боксом
@@ -76,16 +66,19 @@ class MainWidget(QWidget):
         self.choose_word_queue.queue_empty_request.connect(self.reset)
         self.choose_word_page.vars.click_occured.connect(self.get_next_word)
 
-        #self.choose_word_queue.queue_empty_request.connect(self.reset)
+        self.get_next_word()
 
     #новое слово из очереди
     def get_next_word(self):
+        print(f"[DEBUG] get_next_word, queue len={len(self.choose_word_queue.queue)}")
         next_word = self.choose_word_queue.next_word()
+        print(f"[DEBUG] next_word = {next_word}")
         if next_word is not None:
             self.choose_word_page.show_next(next_word)
 
     #ресет
     def reset(self):
+        print("[DEBUG] reset вызван")
         self.choose_word_page.reset_all()
 
     #для теста выводим заполненное
@@ -101,11 +94,11 @@ class ChooseWordQueue(QObject):
         self.queue = deque(words)
 
     def next_word(self):
-        next = self.queue.pop()
+        #next = self.queue.pop()
         if not self.queue:
             self.queue_empty_request.emit()
             return None
-        return next
+        return self.queue.pop()
 
     def clear(self):
         self.queue.clear()
