@@ -7,6 +7,7 @@ from PyQt6.QtWidgets import (
     QWidget, QLabel, QLineEdit, QHBoxLayout, QVBoxLayout, QPushButton
 )
 from PyQt6.QtCore import pyqtSignal, QTimer
+from .custom_buttons import CustomButton
 from dict.consts import VARIANTS, Word, sub_str_btn, sub_str
 from datetime import date
 
@@ -165,7 +166,6 @@ class VarList(QWidget):
         self.is_filled_request.emit(
             all(v.is_filled_line() for v in self.var_lines)
         )
-
 
 '''Класс для отдельной кнопки'''
 class CustomButtonDB(QPushButton):

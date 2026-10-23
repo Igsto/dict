@@ -3,7 +3,3 @@ venv/
 env/
 
 .idea/
-db/data.db
-db/data.db-journal
-db/data.db-wal
-db/data.db-shm

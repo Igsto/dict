@@ -4,10 +4,11 @@
 
 '''Импорты'''
 from PyQt6.QtWidgets import (
-    QWidget, QLabel, QStackedWidget, QPushButton, QVBoxLayout
+    QWidget, QLabel, QStackedWidget, QPushButton, QVBoxLayout, QHBoxLayout
 )
 from PyQt6.QtCore import pyqtSignal, Qt, QTimer
 from PyQt6.QtGui import QCursor
+from .custom_buttons import CustomButton
 from ..consts import Word, sub_str_btn, sub_str_label, VARIANTS
 import random
 import time
@@ -31,12 +32,14 @@ class ChooseWordWidget(QWidget):
         layout.addWidget(vars_label)
         self.vars = ChooseVariants()
         layout.addWidget(self.vars)
+        self.buttons = BeginNInterruptButtons()
+        layout.addWidget(self.buttons)
         layout.setSpacing(10)
         layout.addStretch()
         self.setLayout(layout)
 
     def show_next(self, words: dict):
-        self.word_label.setText(words['w'])
+        self.word_label.setText(words['w'].strip().capitalize())
         var_dict = words.copy()
         var_dict.pop('w', None)
         self.vars.show_words(var_dict)
@@ -44,16 +47,8 @@ class ChooseWordWidget(QWidget):
     def reset_all(self):
         self.word_label.setText('Усё')
         self.vars.reset_lines()
-
-
-# '''Класс с кнопкой начать'''
-# class BeginWidget(QWidget):
-#     def __init__(self):
-#         super().__init__()
-#         self.set_up_w()
-#
-#     def set_up_w(self):
-#         pass
+        self.buttons.begin_button.setEnabled(True)
+        self.buttons.interrupt_button.setEnabled(False)
 
 
 '''Класс одна линия'''
@@ -177,14 +172,20 @@ class ChooseVariants(QWidget):
         for l in self.lines:
             l.setEnabled(True)
 
-# '''Кнопка начать'''
-# class BeginButton(QPushButton):
-#     begin_request = pyqtSignal(bool)
-#     def __init__(self):
-#         super().__init__()
-#         self.set_graphics()
-#
-#     def set_graphics(self):
-#         self.setFixedSize(75, 20)
-#         self.setStyleSheet(sub_str_btn())
-#         self.cl
+
+'''Кнопки начать и прервать'''
+class BeginNInterruptButtons(QWidget):
+    def __init__(self):
+        super().__init__()
+        self.set_up_w()
+
+    def set_up_w(self):
+        self.setFixedSize(170, 20)
+        layout = QHBoxLayout()
+        self.begin_button = CustomButton('Начать')
+        layout.addWidget(self.begin_button)
+        self.interrupt_button = CustomButton('Прервать')
+        layout.addWidget(self.interrupt_button)
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)

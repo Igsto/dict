@@ -24,6 +24,7 @@ class MainWidget(QWidget):
     def __init__(self, storage: Storage):
         super().__init__()
         self.storage = storage
+        #self.not_begin_flag = True
         self.create_w()
 
     def create_w(self):
@@ -33,15 +34,15 @@ class MainWidget(QWidget):
         #выбираем действие
         choose_act = QComboBox()
         choose_act.addItem('Практика')
-        choose_act.addItem('Добавление слова в словарь')
+        choose_act.addItem('Добавление слова')
 
         #создаём слой для выбора и добавляем страницы
         self.acts = QStackedLayout()
         self.choose_word_page = ChooseWordWidget()
+        self.choose_word_page.buttons.interrupt_button.setEnabled(False)
         self.acts.addWidget(self.choose_word_page)
         self.choose_word_controller = ChooseWordController(self.storage)
-        words = [w.to_dict_w() for w in self.choose_word_controller.get_words()]
-        self.choose_word_queue = ChooseWordQueue(words)
+        self.choose_word_queue = ChooseWordQueue()
 
         #аналогично для добавления
         self.add_to_db_page = AddToDBWiget()
@@ -59,13 +60,33 @@ class MainWidget(QWidget):
         main_layout.addLayout(self.acts)
         self.setLayout(main_layout)
 
-        #коннектим с кнопкой
-        self.add_to_db_page.words_request.connect(self.print_words)
+        #self.choose_word_page.buttons.begin_button.setEnabled(True)
+        self.choose_word_page.buttons.begin_button.clicked.connect(self.get_start)
+        self.choose_word_page.buttons.begin_button.clicked.connect(self.interrupt_button_enabeled)
+        self.choose_word_page.buttons.interrupt_button.clicked.connect(self.reset)
 
-        self.choose_word_queue.queue_empty_request.connect(self.reset)
+        self.choose_word_queue.queue_empty_request.connect(self.get_interrupt)
         self.choose_word_page.vars.click_occured.connect(self.get_next_word)
+        self.choose_word_queue.queue_empty_request.connect(self.begin_button_enabeled)
+
+
+    #если нажата кнопка начать
+    def get_start(self):
+        words = [w.to_dict_w() for w in self.choose_word_controller.get_words()]
+        self.choose_word_queue.fill(words)
+        self.choose_word_page.buttons.begin_button.setEnabled(False)
 
         self.get_next_word()
+
+    #включаем кнопку начать если очередь пуста
+    def begin_button_enabeled(self):
+        self.choose_word_page.buttons.begin_button.setEnabled(True)
+
+    def interrupt_button_enabeled(self):
+        self.choose_word_page.buttons.interrupt_button.setEnabled(True)
+
+    def interrupt_button_unenabeled(self):
+        self.choose_word_page.buttons.interrupt_button.setEnabled(False)
 
     #новое слово из очереди
     def get_next_word(self):
@@ -75,27 +96,29 @@ class MainWidget(QWidget):
 
     #ресет
     def reset(self):
-        print("[DEBUG] reset вызван")
         self.choose_word_page.reset_all()
 
-    #для теста выводим заполненное
-    def print_words(self, values):
-        print(values)
+    def get_interrupt(self):
+        self.choose_word_queue.clear()
+        self.reset()
 
 
 '''Кастомная очередь'''
 class ChooseWordQueue(QObject):
     queue_empty_request = pyqtSignal()
-    def __init__(self, words):
+    def __init__(self):
         super().__init__()
-        self.queue = deque(words)
+        #self.queue = deque(words)
 
     def next_word(self):
         #next = self.queue.pop()
-        if not self.queue:
+        if not self.is_empty():
             self.queue_empty_request.emit()
             return None
         return self.queue.pop()
+
+    def fill(self, words):
+        self.queue = deque(words)
 
     def clear(self):
         self.queue.clear()
